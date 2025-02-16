@@ -10,7 +10,11 @@ import { conectDB } from './config/db';
 const app = express()//significa que aremos una app de express , es la estancia del servidor 
 conectDB()
 //leer datos
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4000', // Permite solo solicitudes desde este origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+  credentials: true, // Permite enviar cookies o headers de autenticación
+}));
 
 app.use(express.json())
 
