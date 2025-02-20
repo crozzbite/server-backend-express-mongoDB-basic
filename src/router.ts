@@ -7,7 +7,7 @@ const router = Router()
 // authentificacion y registro!!
 
 
-router.post('/auth/register',
+router.post('/register',
     
     body('handle')
         .notEmpty()
@@ -25,7 +25,7 @@ router.post('/auth/register',
     createAccount)
 // Validaciones 
 
-router.post('/auth/login',
+router.post('/login',
     body('email')
         .isEmail()
         .withMessage('Email no valido'),

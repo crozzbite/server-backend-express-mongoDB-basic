@@ -1,10 +1,8 @@
 import express from "express"; // para importar express de la forma del ESM (Ecmascript module)
 import "dotenv/config";
 import cors from "cors";
-import router from "./router";
+import authrouter from "./router";
 import { conectDB } from "./config/db";
-import User, { IUser } from "./models/Users";
-import bcrypt from "bcrypt"; // Asegúrate de importar bcrypt
 
 // const express = require('express'); para importar express de la forma del  Common Js (CJS)
 
@@ -21,55 +19,55 @@ app.use(
 
 // Middleware para parsear JSON
 app.use(express.json());
-
+app.use('/auth',authrouter)
 // Ruta del Login
-app.post("/auth/login", async (req, res) => {
-  const { email, password } = req.body;
-  console.log("Datos recibidos:", { email, password });
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      res.status(404).json({ message: "Usuario no encontrado" });
-      return;
-    }
+// app.post("/auth/login", async (req, res) => {
+//   const { email, password } = req.body;
+//   console.log("Datos recibidos:", { email, password });
+//   try {
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       res.status(404).json({ message: "Usuario no encontrado" });
+//       return;
+//     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      // error en el login,
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       // error en el login,
 
-      res.status(401).json({ message: "Contraseña incorrecta" });
+//       res.status(401).json({ message: "Contraseña incorrecta" });
 
-      console.log("pw: ", isMatch, " entrado: ", password);
-      return;
-    }
-    res.json({ message: "Login exitoso", user });
-  } catch (error) {
-    res.status(500).json({ message: "Error en el servidor", error });
-  }
-});
+//       console.log("pw: ", isMatch, " entrado: ", password);
+//       return;
+//     }
+//     res.json({ message: "Login exitoso", user });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error en el servidor", error });
+//   }
+// });
 
 // Ruta del Registro
-app.post("/auth/register", async (req, res) => {
-  const { handle, name, email, password } = req.body;
-  console.log("Datos recibidos:", { handle, name, email, password });
+// app.post("/auth/register", async (req, res) => {
+//   const { handle, name, email, password } = req.body;
+//   console.log("Datos recibidos:", { handle, name, email, password });
 
-  try {
-    const salt = await bcrypt.genSalt(10); // Genera un "salt"
-    const hashedPassword = await bcrypt.hash(password, salt); // Encripta la contraseña
-    //Crear nuevo user en la db
-    const newUser = new User({ handle, name, email, password: hashedPassword });
+//   try {
+//     const salt = await bcrypt.genSalt(10); // Genera un "salt"
+//     const hashedPassword = await bcrypt.hash(password, salt); // Encripta la contraseña
+//     //Crear nuevo user en la db
+//     const newUser = new User({ handle, name, email, password: hashedPassword });
 
-    await newUser.save();
-    res.json({
-      message: "Registro exitoso",
-      user: { email },
-      pw: { hashedPassword },
-    });
-  } catch (error) {
-    console.error("Error en el registro:", error);
-    res.status(500).json({ message: "Error en el servidor" });
-  }
-});
+//     await newUser.save();
+//     res.json({
+//       message: "Registro exitoso",
+//       user: { email },
+//       pw: { hashedPassword },
+//     });
+//   } catch (error) {
+//     console.error("Error en el registro:", error);
+//     res.status(500).json({ message: "Error en el servidor" });
+//   }
+// });
 
 app.options("/auth/login", (req, res) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:8081");
